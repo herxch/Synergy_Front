@@ -16,7 +16,7 @@ npm run build    # production build in ./build
 
 ```
 src/
-  index.css                     # design tokens (brand = green + orange accent)
+  index.css                     # design tokens (brand = blue #206ab2 + orange accent)
   App.js                        # routes
   assets/pic/                   # logo, hero, product & category images
   components/
