@@ -1,6 +1,6 @@
 import ScrollToTopNavLink from "../ui/ScrollToTopNavLink";
 import styles from "./Footer.module.css";
-import Logo from "../../assets/pic/logo.png";
+import Logo from "../../assets/pic/logo.svg";
 import { NAV_LINKS } from "../config/navigation";
 import { SITE } from "../config/site";
 

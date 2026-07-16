@@ -1,16 +1,16 @@
 :root {
-  /* ----- Brand (Synergy green) ----- */
-  --color-brand-blue: #1f9a4e;       /* primary — kept var name for shared components */
-  --color-brand-blue-dark: #17803f;
-  --color-brand-blue-deep: #0e5528;
+  /* ----- Brand (Synergy blue — matches the official #206ab2 wordmark) ----- */
+  --color-brand-blue: #206ab2;       /* primary — kept var name for shared components */
+  --color-brand-blue-dark: #1a568f;
+  --color-brand-blue-deep: #103a5f;
   --color-brand-orange: #ee8755;      /* shared accent */
   --color-brand-orange-dark: #d97044;
 
   /* Primary brand alias + translucent tints (override per-brand to re-skin) */
   --color-brand-primary: var(--color-brand-blue);
-  --tint-primary-08: rgba(31, 154, 78, 0.09);
-  --tint-primary-18: rgba(31, 154, 78, 0.2);
-  --tint-primary-focus: rgba(31, 154, 78, 0.18);
+  --tint-primary-08: rgba(32, 106, 178, 0.09);
+  --tint-primary-18: rgba(32, 106, 178, 0.2);
+  --tint-primary-focus: rgba(32, 106, 178, 0.16);
 
   /* ----- Industrial neutrals ----- */
   --color-ink: #0d1117;          /* near-black, deep base */
