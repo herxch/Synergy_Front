@@ -1,0 +1,111 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-steel-100);
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  transition: transform var(--duration-normal) var(--easing-emphasized),
+    box-shadow var(--duration-normal) var(--easing-standard),
+    border-color var(--duration-normal) var(--easing-standard);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-brand-orange);
+}
+
+.card:focus-visible {
+  outline: 3px solid var(--color-brand-orange);
+  outline-offset: 3px;
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: radial-gradient(
+    circle at 50% 40%,
+    var(--color-surface) 0%,
+    var(--color-surface-alt) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--color-steel-100);
+}
+
+.image {
+  max-width: 88%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform var(--duration-slow) var(--easing-emphasized);
+}
+
+.card:hover .image {
+  transform: scale(1.06);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) var(--space-6);
+  flex: 1;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.tag {
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-brand-primary);
+  background: var(--tint-primary-08);
+  padding: 0.3rem 0.9rem;
+  border-radius: var(--radius-sm);
+}
+
+.name {
+  font-size: var(--font-h4);
+  font-weight: var(--font-weight-black);
+  letter-spacing: var(--tracking-tight);
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  line-height: var(--leading-tight);
+}
+
+.summary {
+  font-size: var(--font-small);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+  flex: 1;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-small);
+  font-weight: var(--font-weight-black);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-brand-orange);
+  margin-top: var(--space-1);
+}
+
+.cta svg {
+  transition: transform var(--duration-normal) var(--easing-emphasized);
+}
+
+.card:hover .cta svg {
+  transform: translateX(4px);
+}
