@@ -1,25 +1,44 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import styles from "./ContactForm.module.css";
 import Modal from "../../ui/Modal";
 import { SITE } from "../../config/site";
 
-const INITIAL = { name: "", email: "", category: SITE.contact.categories[0], message: "" };
+const INITIAL = {
+  name: "",
+  email: "",
+  category: SITE.contact.categories[0],
+  message: "",
+  // Honeypot: stays empty for real users. See styles.honeypot.
+  website: "",
+};
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const TO = `info@${SITE.domain}`;
 
-const validate = (data) => {
+const validate = (data, recaptcha) => {
   const errors = {};
   if (!data.name.trim()) errors.name = "Name is required";
   if (!data.email.trim()) errors.email = "Email is required";
   else if (!EMAIL_RE.test(data.email)) errors.email = "Email is invalid";
   if (!data.message.trim()) errors.message = "Message is required";
+  if (!recaptcha) errors.reCaptcha = "Please verify you are not a robot.";
   return errors;
 };
 
 const ContactForm = () => {
   const [form, setForm] = useState(INITIAL);
+  const [recaptchaValue, setRecaptchaValue] = useState("");
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [modal, setModal] = useState(null);
+  const recaptchaRef = useRef(null);
+
+  // reCAPTCHA tokens are single-use, so the widget has to be reset after every
+  // attempt or the next submit is rejected server-side.
+  const resetRecaptcha = () => {
+    recaptchaRef.current?.reset();
+    setRecaptchaValue("");
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,24 +46,49 @@ const ContactForm = () => {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationErrors = validate(form);
+    const validationErrors = validate(form, recaptchaValue);
     if (Object.keys(validationErrors).length) {
       setErrors(validationErrors);
       return;
     }
-    const subject = `[${form.category}] Website enquiry from ${form.name}`;
-    const body = `Name: ${form.name}\nEmail: ${form.email}\nCategory: ${form.category}\n\n${form.message}`;
-    window.location.href = `mailto:${TO}?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
-    setForm(INITIAL);
-    setModal({
-      variant: "success",
-      title: "Thanks for reaching out",
-      message: `Your email client will open with your message ready to send to our team. Prefer to write directly? Email us at ${TO}.`,
-    });
+    setErrors({});
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          source: "synergy",
+          "g-recaptcha-response": recaptchaValue,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      setForm(INITIAL);
+      resetRecaptcha();
+      setModal({
+        variant: "success",
+        title: "Thanks for reaching out",
+        message: "Your message is on its way. Our team will get back to you shortly.",
+      });
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      resetRecaptcha();
+      setModal({
+        variant: "error",
+        title: "Submission Failed",
+        message: `We couldn't send your message right now. Please try again, or email us directly at ${TO}.`,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -83,7 +127,25 @@ const ContactForm = () => {
           value={form.message} onChange={handleChange}
           className={errors.message ? styles.inputError : undefined} />
 
-        <button type="submit">Submit</button>
+        <div className={styles.honeypot} aria-hidden="true">
+          <label htmlFor="website">Website</label>
+          <input type="text" id="website" name="website"
+            value={form.website} onChange={handleChange}
+            tabIndex={-1} autoComplete="off" />
+        </div>
+
+        <ReCAPTCHA
+          ref={recaptchaRef}
+          sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+          onChange={setRecaptchaValue}
+        />
+        {errors.reCaptcha && (
+          <p role="alert" className={styles.error}>{errors.reCaptcha}</p>
+        )}
+
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Submit"}
+        </button>
       </form>
 
       <Modal

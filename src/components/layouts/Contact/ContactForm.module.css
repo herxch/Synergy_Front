@@ -102,3 +102,12 @@
   letter-spacing: 0;
   margin-left: var(--space-3);
 }
+
+/* Bot trap: off-screen rather than display:none, which scripted fillers skip. */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
